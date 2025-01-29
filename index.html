@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            height: 100vh;
+            background-color: #007BFF; /* Blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #weather {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <input type="text" id="city" placeholder="Enter city name">
+        <button onclick="getWeather()">Get Weather</button>
+        <div id="weather"></div>
+    </div>
+    
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('city').value.trim();
+            if (!city) {
+                document.getElementById('weather').innerHTML = '<p>Please enter a city name.</p>';
+                return;
+            }
+            
+            const apiKey = 'a4220fbb460f5f146b19acf3c84e54fc'; // Replace with your OpenWeatherMap API key
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+            
+            try {
+                console.log('Fetching:', url);
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('API Response:', data);
+                
+                if (data.cod !== 200) {
+                    document.getElementById('weather').innerHTML = `<p>Error: ${data.message}</p>`;
+                    return;
+                }
+                
+                document.getElementById('weather').innerHTML = `
+                    <h2>${data.name}, ${data.sys.country}</h2>
+                    <p>Temperature: ${data.main.temp}°C</p>
+                    <p>Weather: ${data.weather[0].description}</p>
+                    <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}.png" alt="Weather Icon">
+                `;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                document.getElementById('weather').innerHTML = '<p>Error fetching weather data.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
